@@ -3,48 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hot Sevens Fire</title>
+<title>Hot Sevens MAX</title>
 
 <style>
 body {
   margin:0;
   font-family:Arial;
+  background: radial-gradient(circle,#2b0000,#000);
   color:white;
   text-align:center;
-  background: radial-gradient(circle, #2b0000, #000000);
   overflow:hidden;
 }
 
-/* FIRE BACKGROUND */
+/* FIRE BG */
 body::before {
   content:"";
   position:fixed;
   width:100%;
   height:100%;
   background: linear-gradient(45deg, red, orange, yellow);
-  opacity:0.15;
-  filter: blur(80px);
-  animation: fireMove 5s infinite alternate;
+  opacity:0.1;
+  filter: blur(100px);
+  animation: fire 6s infinite alternate;
 }
 
-@keyframes fireMove {
-  0% { transform:translateY(0px);}
-  100% { transform:translateY(-50px);}
+@keyframes fire {
+  from { transform:translateY(0); }
+  to { transform:translateY(-60px); }
 }
 
 .title {
   font-size:40px;
   margin:15px;
-  color:#ffcc00;
-  text-shadow:0 0 10px orange, 0 0 20px red, 0 0 40px yellow;
+  color:gold;
+  text-shadow:0 0 10px orange,0 0 30px red;
 }
 
 /* SLOT */
 .slot {
   background:#4b0000;
+  margin:10px;
   padding:15px;
   border-radius:20px;
-  box-shadow:0 0 30px red;
+  box-shadow:0 0 25px red;
 }
 
 .reels {
@@ -55,24 +56,29 @@ body::before {
 .reel {
   width:70px;
   height:150px;
-  background:black;
+  overflow:hidden;
   border:3px solid orange;
   border-radius:15px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  background:black;
+  position:relative;
 }
 
-.reel img {
-  width:60px;
+.strip {
+  position:absolute;
+  width:100%;
+}
+
+.strip img {
+  width:65px;
+  margin:5px 0;
   filter: drop-shadow(0 0 10px yellow);
 }
 
-/* PANELS */
+/* PANEL */
 .panel {
   display:flex;
   justify-content:space-around;
-  margin-top:15px;
+  margin-top:10px;
 }
 
 .box {
@@ -80,29 +86,38 @@ body::before {
   padding:10px;
   border-radius:10px;
   width:30%;
-  box-shadow:0 0 10px #ff6600;
+  box-shadow:0 0 10px orange;
 }
 
-/* BUTTONS */
+/* BUTTON */
 button {
   padding:10px;
   margin:5px;
   border:none;
   border-radius:10px;
-  font-size:14px;
 }
 
 .spin { background:limegreen; }
 .stop { background:red; color:white; }
 .auto { background:orange; }
 
-.big-btn {
+.big {
   width:120px;
   height:120px;
   border-radius:50%;
-  background:white;
   font-size:20px;
-  margin-top:10px;
+  background:white;
+}
+
+/* WIN EFFECT */
+.winFlash {
+  animation: flash 0.3s 6;
+}
+
+@keyframes flash {
+  0%{background:red;}
+  50%{background:yellow;}
+  100%{background:red;}
 }
 </style>
 </head>
@@ -113,11 +128,11 @@ button {
 
 <div class="slot">
   <div class="reels">
-    <div class="reel"><img id="r1"></div>
-    <div class="reel"><img id="r2"></div>
-    <div class="reel"><img id="r3"></div>
-    <div class="reel"><img id="r4"></div>
-    <div class="reel"><img id="r5"></div>
+    <div class="reel"><div class="strip" id="s1"></div></div>
+    <div class="reel"><div class="strip" id="s2"></div></div>
+    <div class="reel"><div class="strip" id="s3"></div></div>
+    <div class="reel"><div class="strip" id="s4"></div></div>
+    <div class="reel"><div class="strip" id="s5"></div></div>
   </div>
 </div>
 
@@ -133,68 +148,86 @@ button {
   <button class="auto" onclick="autoSpin()">AUTO</button>
 </div>
 
-<button class="big-btn" onclick="spin()">SPIN</button>
+<button class="big" onclick="spin()">SPIN</button>
 <button class="stop" onclick="stopSpin()">STOP</button>
+
+<!-- SOUND -->
+<audio id="spinSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+<audio id="winSound" src="https://assets.mixkit.co/active_storage/sfx/2764/2764-preview.mp3"></audio>
 
 <script>
 const symbols = [
-  "https://i.imgur.com/1.png", // watermelon
-  "https://i.imgur.com/2.png", // lemon
-  "https://i.imgur.com/3.png", // cherry
-  "https://i.imgur.com/4.png", // star
-  "https://i.imgur.com/5.png", // seven
-  "https://i.imgur.com/6.png"  // orange
+ "https://cdn-icons-png.flaticon.com/512/590/590685.png",
+ "https://cdn-icons-png.flaticon.com/512/135/135620.png",
+ "https://cdn-icons-png.flaticon.com/512/590/590772.png",
+ "https://cdn-icons-png.flaticon.com/512/590/590749.png",
+ "https://cdn-icons-png.flaticon.com/512/188/188987.png",
+ "https://cdn-icons-png.flaticon.com/512/616/616494.png"
 ];
 
-let spinning=false;
-let interval;
-let credit=1000;
-let bet=20;
-let auto=false;
+let credit=1000, bet=20;
+let spinning=false, auto=false;
+let speeds=[];
 
-function rand(){
-  return symbols[Math.floor(Math.random()*symbols.length)];
-}
-
-function setImages(){
-  for(let i=1;i<=5;i++){
-    document.getElementById("r"+i).src = rand();
+/* CREATE STRIPS */
+function createStrip(id){
+  let strip=document.getElementById(id);
+  for(let i=0;i<20;i++){
+    let img=document.createElement("img");
+    img.src = symbols[Math.floor(Math.random()*symbols.length)];
+    strip.appendChild(img);
   }
 }
+for(let i=1;i<=5;i++) createStrip("s"+i);
 
 function spin(){
   if(spinning || credit<bet) return;
 
-  credit -= bet;
-  update();
+  document.getElementById("spinSound").play();
+  credit-=bet; update();
 
   spinning=true;
+  speeds=[20,22,24,26,28];
 
-  interval=setInterval(setImages,100);
+  animate();
+}
 
-  if(auto){
-    setTimeout(stopSpin,1500);
+function animate(){
+  if(!spinning) return;
+
+  for(let i=1;i<=5;i++){
+    let strip=document.getElementById("s"+i);
+    let top = strip.offsetTop + speeds[i-1];
+    strip.style.top = (top % 300) + "px";
   }
+
+  requestAnimationFrame(animate);
 }
 
 function stopSpin(){
-  clearInterval(interval);
   spinning=false;
 
-  let imgs=[];
+  let result=[];
   for(let i=1;i<=5;i++){
-    imgs.push(document.getElementById("r"+i).src);
+    let imgs=document.querySelectorAll("#s"+i+" img");
+    let r = Math.floor(Math.random()*imgs.length);
+    result.push(imgs[r].src);
   }
 
-  let win=0;
-
   let count={};
-  imgs.forEach(i=>count[i]=(count[i]||0)+1);
+  result.forEach(v=>count[v]=(count[v]||0)+1);
 
+  let win=0;
   for(let k in count){
     if(count[k]>=3){
       win = count[k]*bet;
     }
+  }
+
+  if(win>0){
+    document.body.classList.add("winFlash");
+    document.getElementById("winSound").play();
+    setTimeout(()=>document.body.classList.remove("winFlash"),1000);
   }
 
   credit+=win;
@@ -212,9 +245,10 @@ function autoSpin(){
   auto=!auto;
   if(auto){
     let loop=setInterval(()=>{
-      if(!auto){ clearInterval(loop); return;}
+      if(!auto){clearInterval(loop);return;}
       spin();
-    },2000);
+      setTimeout(stopSpin,1500);
+    },2500);
   }
 }
 
@@ -222,9 +256,6 @@ function update(){
   document.getElementById("credit").innerText=credit;
   document.getElementById("bet").innerText=bet;
 }
-
-setImages();
-update();
 </script>
 
 </body>
