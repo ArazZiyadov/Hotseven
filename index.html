@@ -3,260 +3,394 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hot Sevens MAX</title>
+<title>Hot Sevens ULTRA MAX</title>
 
 <style>
-body {
-  margin:0;
-  font-family:Arial;
-  background: radial-gradient(circle,#2b0000,#000);
-  color:white;
-  text-align:center;
-  overflow:hidden;
+:root{
+  --bg1:#2b0000; --bg2:#000;
+  --gold:#ffcc00; --orange:#ff7a00;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Arial,Helvetica,sans-serif;color:#fff;text-align:center;
+  background: radial-gradient(circle,var(--bg1),var(--bg2)); overflow:hidden;
 }
 
-/* FIRE BG */
-body::before {
-  content:"";
-  position:fixed;
-  width:100%;
-  height:100%;
-  background: linear-gradient(45deg, red, orange, yellow);
-  opacity:0.1;
-  filter: blur(100px);
-  animation: fire 6s infinite alternate;
+/* fire glow bg */
+body::before{
+  content:"";position:fixed;inset:-20%;
+  background: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffd000, #ff0000);
+  filter: blur(120px); opacity:.12; animation: swirl 8s linear infinite;
+}
+@keyframes swirl{to{transform:rotate(360deg)}}
+
+.header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;font-size:14px;background:#00000066;backdrop-filter:blur(6px)
+}
+.title{
+  font-size:34px;margin:10px 0;color:var(--gold);
+  text-shadow:0 0 10px #ffa500,0 0 30px #ff0000;
 }
 
-@keyframes fire {
-  from { transform:translateY(0); }
-  to { transform:translateY(-60px); }
+/* slot frame */
+.frame{
+  margin:8px auto; width:min(520px,95vw);
+  background:#4b0000;border-radius:18px;padding:12px;
+  box-shadow:0 0 30px #ff0000;
+}
+.window{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:6px;background:#0b0b0b;border-radius:12px;padding:8px;
+  box-shadow: inset 0 0 20px #000;
+}
+.cell{
+  position:relative; height:90px; border-radius:10px;
+  background:#000; display:flex;align-items:center;justify-content:center;
+  border:2px solid #ff8c00;
+}
+.cell img{
+  width:70px; filter: drop-shadow(0 0 10px #ffd000);
+  transition: transform .15s ease;
+}
+.cell.win{
+  outline:3px solid #ffd000; box-shadow:0 0 20px #ffd000 inset,0 0 20px #ffd000;
+  animation: pulse .6s ease-in-out 2;
+}
+@keyframes pulse{
+  0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}
 }
 
-.title {
-  font-size:40px;
-  margin:15px;
-  color:gold;
-  text-shadow:0 0 10px orange,0 0 30px red;
+/* top bars */
+.bars{display:flex;justify-content:space-between;margin:8px 0}
+.badge{
+  background:#111;padding:8px 10px;border-radius:10px;min-width:30%;
+  box-shadow:0 0 10px #ff7a00;
+}
+.badge b{color:#ffd000}
+
+/* controls */
+.controls{margin:10px 0}
+button{
+  border:none;border-radius:12px;padding:10px 12px;margin:4px;
+  font-weight:600;cursor:pointer
+}
+.spin{background:#28c76f;color:#003}
+.stop{background:#ff3b3b;color:#fff}
+.auto{background:#ffa500}
+.bet{background:#444;color:#fff}
+.big{
+  width:120px;height:120px;border-radius:50%;font-size:18px;background:#fff;color:#000
 }
 
-/* SLOT */
-.slot {
-  background:#4b0000;
-  margin:10px;
-  padding:15px;
-  border-radius:20px;
-  box-shadow:0 0 25px red;
+/* coin burst */
+.coins{position:fixed;inset:0;pointer-events:none}
+.coin{
+  position:absolute;width:12px;height:12px;border-radius:50%;
+  background: radial-gradient(circle,#fff,#ffd000 60%,#ff8c00);
+  animation: fall 1s ease-out forwards;
+}
+@keyframes fall{
+  to{transform:translateY(140vh) translateX(var(--dx)); opacity:0}
 }
 
-.reels {
-  display:flex;
-  justify-content:space-between;
-}
-
-.reel {
-  width:70px;
-  height:150px;
-  overflow:hidden;
-  border:3px solid orange;
-  border-radius:15px;
-  background:black;
-  position:relative;
-}
-
-.strip {
-  position:absolute;
-  width:100%;
-}
-
-.strip img {
-  width:65px;
-  margin:5px 0;
-  filter: drop-shadow(0 0 10px yellow);
-}
-
-/* PANEL */
-.panel {
-  display:flex;
-  justify-content:space-around;
-  margin-top:10px;
-}
-
-.box {
-  background:#111;
-  padding:10px;
-  border-radius:10px;
-  width:30%;
-  box-shadow:0 0 10px orange;
-}
-
-/* BUTTON */
-button {
-  padding:10px;
-  margin:5px;
-  border:none;
-  border-radius:10px;
-}
-
-.spin { background:limegreen; }
-.stop { background:red; color:white; }
-.auto { background:orange; }
-
-.big {
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  font-size:20px;
-  background:white;
-}
-
-/* WIN EFFECT */
-.winFlash {
-  animation: flash 0.3s 6;
-}
-
-@keyframes flash {
-  0%{background:red;}
-  50%{background:yellow;}
-  100%{background:red;}
-}
+/* small hint */
+.footer{opacity:.7;font-size:12px;margin-bottom:8px}
 </style>
 </head>
 
 <body>
 
+<div class="header">
+  <div>JACKPOT: <b id="jackpot">250.00</b></div>
+  <div>BONUS: <b id="bonus">120.00</b></div>
+</div>
+
 <div class="title">🔥 HOT SEVENS 🔥</div>
 
-<div class="slot">
-  <div class="reels">
-    <div class="reel"><div class="strip" id="s1"></div></div>
-    <div class="reel"><div class="strip" id="s2"></div></div>
-    <div class="reel"><div class="strip" id="s3"></div></div>
-    <div class="reel"><div class="strip" id="s4"></div></div>
-    <div class="reel"><div class="strip" id="s5"></div></div>
+<div class="frame">
+  <div id="grid" class="window"></div>
+
+  <div class="bars">
+    <div class="badge">CREDIT<br><b id="credit">1000</b></div>
+    <div class="badge">WIN<br><b id="win">0</b></div>
+    <div class="badge">BET<br><b id="bet">20</b></div>
   </div>
+
+  <div class="controls">
+    <button class="bet" onclick="changeBet(-10)">- BET</button>
+    <button class="bet" onclick="changeBet(10)">+ BET</button>
+    <button class="auto" onclick="toggleAuto()">AUTO</button>
+  </div>
+
+  <button class="big" onclick="spin()">SPIN</button>
+  <button class="stop" onclick="forceStop()">STOP</button>
 </div>
 
-<div class="panel">
-  <div class="box">CREDIT<br><span id="credit">1000</span></div>
-  <div class="box">WIN<br><span id="win">0</span></div>
-  <div class="box">BET<br><span id="bet">20</span></div>
-</div>
+<div class="footer">Demo (frontend only) — real pul və server yoxdur</div>
 
-<div>
-  <button onclick="changeBet(-10)">- BET</button>
-  <button onclick="changeBet(10)">+ BET</button>
-  <button class="auto" onclick="autoSpin()">AUTO</button>
-</div>
+<div class="coins" id="coins"></div>
 
-<button class="big" onclick="spin()">SPIN</button>
-<button class="stop" onclick="stopSpin()">STOP</button>
-
-<!-- SOUND -->
-<audio id="spinSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
-<audio id="winSound" src="https://assets.mixkit.co/active_storage/sfx/2764/2764-preview.mp3"></audio>
+<audio id="spinSnd" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+<audio id="winSnd" src="https://assets.mixkit.co/active_storage/sfx/2764/2764-preview.mp3"></audio>
 
 <script>
-const symbols = [
- "https://cdn-icons-png.flaticon.com/512/590/590685.png",
- "https://cdn-icons-png.flaticon.com/512/135/135620.png",
- "https://cdn-icons-png.flaticon.com/512/590/590772.png",
- "https://cdn-icons-png.flaticon.com/512/590/590749.png",
- "https://cdn-icons-png.flaticon.com/512/188/188987.png",
- "https://cdn-icons-png.flaticon.com/512/616/616494.png"
+/* --- assets (3D PNG) --- */
+const ICONS = {
+  W: "https://cdn-icons-png.flaticon.com/512/188/188987.png", // Wild (star)
+  S: "https://cdn-icons-png.flaticon.com/512/616/616494.png", // Scatter (7)
+  A: "https://cdn-icons-png.flaticon.com/512/590/590685.png", // watermelon
+  B: "https://cdn-icons-png.flaticon.com/512/135/135620.png", // lemon
+  C: "https://cdn-icons-png.flaticon.com/512/590/590772.png", // cherry
+  D: "https://cdn-icons-png.flaticon.com/512/590/590749.png"  // orange
+};
+
+/* weights (near-miss üçün azca bias) */
+const WEIGHTS = [
+  ["A", 24], ["B", 22], ["C", 20], ["D", 18], ["W", 10], ["S", 6]
 ];
 
-let credit=1000, bet=20;
-let spinning=false, auto=false;
-let speeds=[];
+const REELS = 5, ROWS = 3;
+let grid = []; // [col][row]
+let credit=1000, bet=20, auto=false, spinning=false, freeSpins=0;
 
-/* CREATE STRIPS */
-function createStrip(id){
-  let strip=document.getElementById(id);
-  for(let i=0;i<20;i++){
-    let img=document.createElement("img");
-    img.src = symbols[Math.floor(Math.random()*symbols.length)];
-    strip.appendChild(img);
+/* paylines (10 xətt) */
+const LINES = [
+  [1,1,1,1,1], // middle
+  [0,0,0,0,0], // top
+  [2,2,2,2,2], // bottom
+  [0,1,2,1,0],
+  [2,1,0,1,2],
+  [0,0,1,0,0],
+  [2,2,1,2,2],
+  [1,0,0,0,1],
+  [1,2,2,2,1],
+  [0,1,1,1,0]
+];
+
+/* payouts (sadə) */
+const PAY = {
+  A:[0,0,2,5,10,20],
+  B:[0,0,2,5,10,18],
+  C:[0,0,3,6,12,22],
+  D:[0,0,3,6,12,22],
+  W:[0,0,0,0,0,0], // wild öz-özünə ödəmir
+  S:[0,0,0,2,10,50] // scatter sayına görə
+};
+
+/* build grid */
+const gridEl = document.getElementById("grid");
+function build(){
+  gridEl.innerHTML="";
+  grid = Array.from({length:REELS},()=>Array(ROWS).fill("A"));
+  for(let c=0;c<REELS;c++){
+    for(let r=0;r<ROWS;r++){
+      const cell=document.createElement("div");
+      cell.className="cell";
+      const img=document.createElement("img");
+      img.src = ICONS.A;
+      cell.appendChild(img);
+      cell.dataset.c=c; cell.dataset.r=r;
+      gridEl.appendChild(cell);
+    }
   }
 }
-for(let i=1;i<=5;i++) createStrip("s"+i);
+build();
+
+/* weighted random */
+function pick(){
+  const sum = WEIGHTS.reduce((a,[,w])=>a+w,0);
+  let x = Math.random()*sum;
+  for(const [k,w] of WEIGHTS){ if((x-=w)<=0) return k; }
+  return "A";
+}
+
+/* animate reels with easing */
+let rafId;
+let reelPos = Array(REELS).fill(0);
+let reelVel = [26,28,30,32,34]; // fərqli sürət
+let stopAt = []; // final symbols per reel
 
 function spin(){
-  if(spinning || credit<bet) return;
+  if(spinning || (credit<bet && freeSpins===0)) return;
 
-  document.getElementById("spinSound").play();
-  credit-=bet; update();
+  document.getElementById("spinSnd").currentTime=0;
+  document.getElementById("spinSnd").play();
+
+  if(freeSpins>0) freeSpins--; else credit -= bet;
+  update();
 
   spinning=true;
-  speeds=[20,22,24,26,28];
+  // final nəticəni əvvəlcədən qur (RNG)
+  stopAt = Array.from({length:REELS},()=>{
+    return Array.from({length:ROWS},()=>pick());
+  });
 
+  // near-miss hissi: bəzən 2 scatter ver, 3-ə az qalsın
+  if(Math.random()<0.25){
+    const cols=[0,2,4];
+    cols.forEach((c,i)=> stopAt[c][1] = (i<2?"S":pick()));
+  }
+
+  reelPos = Array(REELS).fill(0);
   animate();
+  // mərhələli dayanma
+  for(let i=0;i<REELS;i++){
+    setTimeout(()=> slowDown(i), 700 + i*220);
+  }
 }
 
 function animate(){
   if(!spinning) return;
-
-  for(let i=1;i<=5;i++){
-    let strip=document.getElementById("s"+i);
-    let top = strip.offsetTop + speeds[i-1];
-    strip.style.top = (top % 300) + "px";
-  }
-
-  requestAnimationFrame(animate);
-}
-
-function stopSpin(){
-  spinning=false;
-
-  let result=[];
-  for(let i=1;i<=5;i++){
-    let imgs=document.querySelectorAll("#s"+i+" img");
-    let r = Math.floor(Math.random()*imgs.length);
-    result.push(imgs[r].src);
-  }
-
-  let count={};
-  result.forEach(v=>count[v]=(count[v]||0)+1);
-
-  let win=0;
-  for(let k in count){
-    if(count[k]>=3){
-      win = count[k]*bet;
+  // hər frame-də random axış (vizual)
+  for(let c=0;c<REELS;c++){
+    reelPos[c]+=reelVel[c];
+    if(reelPos[c] % 20 < reelVel[c]) {
+      // hər “klikdə” hüceyrələri dəyiş
+      for(let r=0;r<ROWS;r++){
+        setCell(c,r, pick());
+      }
     }
   }
+  rafId = requestAnimationFrame(animate);
+}
 
-  if(win>0){
-    document.body.classList.add("winFlash");
-    document.getElementById("winSound").play();
-    setTimeout(()=>document.body.classList.remove("winFlash"),1000);
+function slowDown(col){
+  // sürəti azaldıb dayandır
+  let v = reelVel[col];
+  const dec = setInterval(()=>{
+    v *= 0.82;
+    reelVel[col] = v;
+    if(v < 4){
+      clearInterval(dec);
+      // final simvolları yerləşdir
+      for(let r=0;r<ROWS;r++){
+        setCell(col,r, stopAt[col][r]);
+      }
+      // sonuncu kolon dayananda hesabla
+      if(col===REELS-1){
+        cancelAnimationFrame(rafId);
+        spinning=false;
+        evaluate();
+      }
+    }
+  }, 60);
+}
+
+function setCell(c,r,sym){
+  grid[c][r]=sym;
+  const cell = [...gridEl.children].find(el=>+el.dataset.c===c && +el.dataset.r===r);
+  const img = cell.firstChild;
+  img.src = ICONS[sym];
+}
+
+/* evaluate wins */
+function evaluate(){
+  clearWinMarks();
+  let totalWin = 0;
+
+  // lines
+  LINES.forEach(line=>{
+    let first = grid[0][line[0]];
+    let count = 1;
+
+    for(let c=1;c<REELS;c++){
+      let cur = grid[c][line[c]];
+      if(cur===first || cur==="W" || first==="W"){
+        if(first==="W" && cur!=="W") first=cur;
+        count++;
+      } else break;
+    }
+
+    if(count>=3){
+      const pay = (PAY[first]||[0,0,0,0,0,0])[count] * bet;
+      if(pay>0){
+        totalWin += pay;
+        // mark cells
+        for(let c=0;c<count;c++){
+          markWin(c, line[c]);
+        }
+      }
+    }
+  });
+
+  // scatters (istənilən yerdə)
+  let scat=0;
+  for(let c=0;c<REELS;c++){
+    for(let r=0;r<ROWS;r++){
+      if(grid[c][r]==="S"){ scat++; markWin(c,r); }
+    }
+  }
+  if(scat>=3){
+    const sw = PAY.S[scat]*bet;
+    totalWin += sw;
+    freeSpins += 5; // free spins
   }
 
-  credit+=win;
-  document.getElementById("win").innerText=win;
-  update();
-}
+  if(totalWin>0){
+    credit += totalWin;
+    document.getElementById("win").innerText = totalWin;
+    burstCoins(60);
+    document.getElementById("winSnd").currentTime=0;
+    document.getElementById("winSnd").play();
+  } else {
+    document.getElementById("win").innerText = 0;
+  }
 
-function changeBet(v){
-  bet+=v;
-  if(bet<10) bet=10;
   update();
-}
 
-function autoSpin(){
-  auto=!auto;
   if(auto){
-    let loop=setInterval(()=>{
-      if(!auto){clearInterval(loop);return;}
+    setTimeout(()=>{
       spin();
-      setTimeout(stopSpin,1500);
-    },2500);
+    }, 900);
   }
 }
 
-function update(){
-  document.getElementById("credit").innerText=credit;
-  document.getElementById("bet").innerText=bet;
+function markWin(c,r){
+  const el = [...gridEl.children].find(e=>+e.dataset.c===c && +e.dataset.r===r);
+  el.classList.add("win");
 }
-</script>
+function clearWinMarks(){
+  [...gridEl.children].forEach(e=>e.classList.remove("win"));
+}
 
+/* coins */
+function burstCoins(n){
+  const wrap = document.getElementById("coins");
+  for(let i=0;i<n;i++){
+    const d=document.createElement("div");
+    d.className="coin";
+    d.style.left = (Math.random()*100)+"vw";
+    d.style.top = "-10px";
+    d.style.setProperty("--dx", (Math.random()*200-100)+"px");
+    wrap.appendChild(d);
+    setTimeout(()=>d.remove(), 1000);
+  }
+}
+
+/* controls */
+function changeBet(v){
+  bet = Math.max(10, bet+v);
+  update();
+}
+function toggleAuto(){ auto=!auto; if(auto) spin(); }
+function forceStop(){ spinning=false; cancelAnimationFrame(rafId); evaluate(); }
+
+/* ui */
+function update(){
+  document.getElementById("credit").innerText = credit;
+  document.getElementById("bet").innerText = bet;
+}
+
+/* fake jackpot/bonus artımı */
+setInterval(()=>{
+  const j = document.getElementById("jackpot");
+  const b = document.getElementById("bonus");
+  j.textContent = (parseFloat(j.textContent)+Math.random()).toFixed(2);
+  b.textContent = (parseFloat(b.textContent)+Math.random()).toFixed(2);
+}, 2000);
+
+update();
+</script>
 </body>
 </html>
