@@ -1,605 +1,139 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hot Sevens Slot Machine</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background-color: #0a0a1a;
-            color: #fff;
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .slot-machine {
-            background: linear-gradient(145deg, #1a1a2e, #16213e);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 0 40px rgba(255, 100, 0, 0.4);
-            width: 900px;
-            max-width: 100%;
-        }
-        
-        .title {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 32px;
-            color: #ff9900;
-            text-shadow: 0 0 15px #ff6600;
-            letter-spacing: 3px;
-        }
-        
-        .balance-section {
-            background: linear-gradient(135deg, #1e3a5f, #0d1b2a);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .balance-label {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 5px;
-        }
-        
-        .balance-value {
-            font-size: 36px;
-            font-weight: bold;
-            color: #00ffcc;
-            text-shadow: 0 0 10px #00ffcc;
-        }
-        
-        .add-funds-section {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .add-btn {
-            background: linear-gradient(to bottom, #ffcc00, #ff9900);
-            border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .add-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(255, 200, 0, 0.5);
-        }
-        
-        .custom-amount {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        
-        .custom-amount input {
-            width: 150px;
-            padding: 10px;
-            border-radius: 8px;
-            border: 2px solid #ffcc00;
-            background: #1a1a2e;
-            color: #fff;
-            font-size: 16px;
-        }
-        
-        .custom-amount button {
-            background: linear-gradient(to bottom, #ffcc00, #ff9900);
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .game-area {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        
-        .paylines {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            padding: 10px 5px;
-        }
-        
-        .payline {
-            background: linear-gradient(to right, #ff3300, #ff9900);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
-            font-size: 14px;
-            min-width: 35px;
-        }
-        
-        .payline.hot {
-            background: linear-gradient(to right, #ff0000, #ff6600);
-            animation: glow 1s ease-in-out infinite alternate;
-        }
-        
-        @keyframes glow {
-            from { box-shadow: 0 0 5px #ff0000; }
-            to { box-shadow: 0 0 20px #ff6600; }
-        }
-        
-        .reels-container {
-            flex: 1;
-            background-color: rgba(0, 0, 0, 0.6);
-            border-radius: 15px;
-            padding: 20px;
-            border: 3px solid #333;
-        }
-        
-        .reels {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-        }
-        
-        .reel {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .symbol {
-            width: 100%;
-            aspect-ratio: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 45px;
-            background: radial-gradient(circle, #2a2a4a, #1a1a2e);
-            border-radius: 12px;
-            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.1);
-            border: 2px solid #444;
-            transition: all 0.1s;
-        }
-        
-        .symbol.spinning {
-            animation: spin 0.1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-        
-        .controls {
-            background: linear-gradient(to bottom, #1a1a2e, #0d0d1a);
-            border-radius: 15px;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .info-panel {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .info-box {
-            background: linear-gradient(to bottom, #222, #111);
-            padding: 12px 20px;
-            border-radius: 10px;
-            min-width: 100px;
-            text-align: center;
-            border: 1px solid #333;
-        }
-        
-        .info-label {
-            font-size: 11px;
-            color: #888;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-        
-        .info-value {
-            font-size: 20px;
-            font-weight: bold;
-            color: #fff;
-        }
-        
-        .info-value.win {
-            color: #00ff00;
-            text-shadow: 0 0 10px #00ff00;
-        }
-        
-        .spin-button {
-            background: linear-gradient(to bottom, #44cc44, #228822);
-            border: none;
-            border-radius: 50%;
-            width: 90px;
-            height: 90px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.4);
-            transition: all 0.3s;
-        }
-        
-        .spin-button:hover:not(:disabled) {
-            transform: scale(1.1);
-            box-shadow: 0 8px 25px rgba(0, 255, 0, 0.6);
-        }
-        
-        .spin-button:active:not(:disabled) {
-            transform: scale(0.95);
-        }
-        
-        .spin-button:disabled {
-            background: linear-gradient(to bottom, #666, #444);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        
-        .message {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            min-height: 30px;
-        }
-        
-        .message.win {
-            color: #00ff00;
-            text-shadow: 0 0 15px #00ff00;
-            animation: pulse 0.5s ease-in-out;
-        }
-        
-        .message.lose {
-            color: #ff6666;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        .jackpot-section {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            padding: 15px;
-            background: linear-gradient(135deg, #2a1a0a, #1a0a00);
-            border-radius: 10px;
-        }
-        
-        .jackpot {
-            color: #ffcc00;
-            font-weight: bold;
-            font-size: 18px;
-            text-shadow: 0 0 10px #ffcc00;
-        }
-        
-        .bonus {
-            color: #00ffcc;
-            font-weight: bold;
-            font-size: 18px;
-            text-shadow: 0 0 10px #00ffcc;
-        }
-        
-        .bet-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .bet-btn {
-            background: linear-gradient(to bottom, #666, #444);
-            border: none;
-            border-radius: 5px;
-            width: 35px;
-            height: 35px;
-            color: #fff;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .bet-btn:hover {
-            background: linear-gradient(to bottom, #888, #666);
-        }
-    </style>
-</head>
-<body>
-    <div class="slot-machine">
-        <div class="title">🎰 HOT SEVENS 🎰</div>
-        
-        <!-- Balans bölməsi -->
-        <div class="balance-section">
-            <div class="balance-label">SİZİN BALANSINIZ</div>
-            <div class="balance-value" id="balance">100,000.00</div>
-            <div class="add-funds-section">
-                <button class="add-btn" onclick="addFunds(1000)">+1,000</button>
-                <button class="add-btn" onclick="addFunds(5000)">+5,000</button>
-                <button class="add-btn" onclick="addFunds(10000)">+10,000</button>
-                <button class="add-btn" onclick="addFunds(50000)">+50,000</button>
-            </div>
-            <div class="custom-amount">
-                <input type="number" id="customAmount" placeholder="Xüsusi məbləğ" min="1">
-                <button onclick="addCustomFunds()">Əlavə et</button>
-            </div>
-        </div>
-        
-        <!-- Oyun sahəsi -->
-        <div class="game-area">
-            <div class="paylines">
-                <div class="payline">1</div>
-                <div class="payline">2</div>
-                <div class="payline">3</div>
-                <div class="payline">4</div>
-                <div class="payline">5</div>
-            </div>
-            
-            <div class="reels-container">
-                <div class="reels" id="reels">
-                    <!-- 5 təkər, hər birində 3 simvol -->
-                    <div class="reel">
-                        <div class="symbol">🍇</div>
-                        <div class="symbol">🍒</div>
-                        <div class="symbol">🍊</div>
-                    </div>
-                    <div class="reel">
-                        <div class="symbol">🍋</div>
-                        <div class="symbol">🍇</div>
-                        <div class="symbol">🍒</div>
-                    </div>
-                    <div class="reel">
-                        <div class="symbol">🫐</div>
-                        <div class="symbol">🍊</div>
-                        <div class="symbol">⭐</div>
-                    </div>
-                    <div class="reel">
-                        <div class="symbol">🍒</div>
-                        <div class="symbol">🍋</div>
-                        <div class="symbol">🍇</div>
-                    </div>
-                    <div class="reel">
-                        <div class="symbol">🍊</div>
-                        <div class="symbol">🫐</div>
-                        <div class="symbol">🍒</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="paylines">
-                <div class="payline">6</div>
-                <div class="payline">7</div>
-                <div class="payline hot">777</div>
-                <div class="payline">8</div>
-                <div class="payline">9</div>
-            </div>
-        </div>
-        
-        <!-- Nəzarət paneli -->
-        <div class="controls">
-            <div class="info-panel">
-                <div class="info-box">
-                    <div class="info-label">BET</div>
-                    <div class="info-value" id="bet">100</div>
-                </div>
-                <div class="bet-controls">
-                    <button class="bet-btn" onclick="changeBet(-50)">-</button>
-                    <button class="bet-btn" onclick="changeBet(50)">+</button>
-                </div>
-                <div class="info-box">
-                    <div class="info-label">WIN</div>
-                    <div class="info-value win" id="win">0</div>
-                </div>
-            </div>
-            
-            <button class="spin-button" id="spinBtn" onclick="spin()">
-                START
-            </button>
-        </div>
-        
-        <!-- Mesaj -->
-        <div class="message" id="message">OYUNA BAŞLAMAQ ÜÇÜN START DÜYMƏSİNİ BASIN</div>
-        
-        <!-- Cekpot və Bonus -->
-        <div class="jackpot-section">
-            <div class="jackpot">🏆 JACKPOT: <span id="jackpot">151,092.56</span> fun</div>
-            <div class="bonus">🎁 BONUS: <span id="bonus">226,578.84</span> fun</div>
-        </div>
-    </div>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hot Sevens Slot</title>
 
-    <script>
-        // Simvollar və onların çarpanları
-        const symbols = ['🍇', '🍒', '🍊', '🫐', '🍋', '⭐', '7️⃣'];
-        const multipliers = {
-            '🍇': 2,
-            '🍒': 3,
-            '🍊': 4,
-            '🫐': 5,
-            '🍋': 8,
-            '⭐': 15,
-            '7️⃣': 77
-        };
-        
-        // Oyun dəyişənləri
-        let balance = 100000;
-        let bet = 100;
-        let jackpot = 151092.56;
-        let bonus = 226578.84;
-        let isSpinning = false;
-        
-        // DOM elementləri
-        const balanceEl = document.getElementById('balance');
-        const betEl = document.getElementById('bet');
-        const winEl = document.getElementById('win');
-        const jackpotEl = document.getElementById('jackpot');
-        const bonusEl = document.getElementById('bonus');
-        const messageEl = document.getElementById('message');
-        const spinBtn = document.getElementById('spinBtn');
-        const reelsContainer = document.getElementById('reels');
-        
-        // Balansı yenilə
-        function updateBalance() {
-            balanceEl.textContent = balance.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
-        
-        // Balans əlavə et
-        function addFunds(amount) {
-            balance += amount;
-            updateBalance();
-            showMessage(`${amount.toLocaleString()} fun əlavə edildi!`, 'win');
-        }
-        
-        // Xüsusi məbləğ əlavə et
-        function addCustomFunds() {
-            const input = document.getElementById('customAmount');
-            const amount = parseFloat(input.value);
-            if (amount && amount > 0) {
-                balance += amount;
-                updateBalance();
-                showMessage(`${amount.toLocaleString()} fun əlavə edildi!`, 'win');
-                input.value = '';
-            }
-        }
-        
-        // Bet dəyiş
-        function changeBet(delta) {
-            const newBet = bet + delta;
-            if (newBet >= 50 && newBet <= balance) {
-                bet = newBet;
-                betEl.textContent = bet.toLocaleString();
-            }
-        }
-        
-        // Təsadüfi simvol al
-        function getRandomSymbol() {
-            const rand = Math.random();
-            // 7️⃣ simvolu daha az ehtimalla gəlsin (5%)
-            if (rand < 0.05) return '7️⃣';
-            // ⭐ simvolu da az ehtimalla (10%)
-            if (rand < 0.15) return '⭐';
-            // Digər simvollar
-            const otherSymbols = symbols.filter(s => s !== '7️⃣' && s !== '⭐');
-            return otherSymbols[Math.floor(Math.random() * otherSymbols.length)];
-        }
-        
-        // Spin funksiyası
-        function spin() {
-            if (isSpinning) return;
-            if (balance < bet) {
-                showMessage('BALANSINIZ KIFAYƏT DEYİL! BİR AZ ƏLAVƏ EDİN.', 'lose');
-                return;
-            }
-            
-            isSpinning = true;
-            spinBtn.disabled = true;
-            balance -= bet;
-            updateBalance();
-            winEl.textContent = '0';
-            
-            // Bütün təkərləri fırlat
-            const reels = document.querySelectorAll('.reel');
-            const finalSymbols = [];
-            
-            reels.forEach((reel, reelIndex) => {
-                const symbolsInReel = reel.querySelectorAll('.symbol');
-                finalSymbols[reelIndex] = [];
-                
-                // Fırlanma animasiyası
-                symbolsInReel.forEach(symbol => {
-                    symbol.classList.add('spinning');
-                });
-                
-                // Təkərlər bir-bir dayansın
-                setTimeout(() => {
-                    symbolsInReel.forEach((symbol, i) => {
-                        const newSymbol = getRandomSymbol();
-                        finalSymbols[reelIndex][i] = newSymbol;
-                        symbol.textContent = newSymbol;
-                        symbol.classList.remove('spinning');
-                        
-                        // Sonuncu təkər dayandıqda qazancı yoxla
-                        if (reelIndex === 4 && i === 2) {
-                            checkWin(finalSymbols);
-                        }
-                    });
-                }, 500 + reelIndex * 300);
-            });
-        }
-        
-        // Qazancı yoxla
-        function checkWin(reels) {
-            let totalWin = 0;
-            const winningLines = [];
-            
-            // Yoxlama xətləri (5 xətt)
-            const lines = [
-                [0, 0, 0, 0, 0], // Üst sıra
-                [1, 1, 1, 1, 1], // Orta sıra
-                [2, 2, 2, 2, 2], // Alt sıra
-                [0, 1, 2, 1, 0], // V forması
-                [2, 1, 0, 1, 2]  // Tərs V forması
-            ];
-            
-            lines.forEach((line, lineIndex) => {
-                const lineSymbols = line.map((row, col) => reels[col][row]);
-                
-                // 3 eyni simvol
-                if (lineSymbols[0] === lineSymbols[1] && lineSymbols[1] === lineSymbols[2]) {
-                    const symbol = lineSymbols[0];
-                    const multiplier = multipliers[symbol] || 2;
-                    totalWin += bet * multiplier;
-                    winningLines.push(lineIndex + 1);
-                }
-                
-                // 4 eyni simvol
-                if (lineSymbols[0] === lineSymbols[1] && 
-                    lineSymbols[1] === lineSymbols[2] && 
-                    lineSymbols[2] === lineSymbols[3]) {
-                    const symbol = lineSymbols[0];
-                    const multiplier = multipliers[symbol] || 2;
-                    totalWin += bet * multiplier * 1.5;
-                }
-                
-                // 5 eyni simvol (BÜYÜK QAZANC!)
-                if (lineSymbols[0] === lineSymbols[1] && 
-                    lineSymbols[1] === lineSymbols[2] && 
-                    lineSymbols[2] === lineSymbols[3] && 
-                    lineSymbols[3] === lineSymbols[4]) {
-                    const symbol = lineSymbols[0];
-                    const multiplier = multipliers[symbol] || 2;
-                    totalWin += bet * multiplier * 3;
-                    
-                    // 777 jackpot
-                    if (symbol === '7️⃣') {
-                        jackpot -= 50000;
-                        jackpotEl.textContent = jackpot.toLocaleString('en-US', {
-                            minimumFractionDigits
+<style>
+body {
+  background: #111;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+}
+
+.container {
+  max-width: 400px;
+  margin: auto;
+}
+
+.title {
+  font-size: 28px;
+  color: gold;
+  margin: 10px 0;
+}
+
+.reels {
+  display: flex;
+  justify-content: space-between;
+  background: darkred;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.reel {
+  width: 60px;
+  height: 120px;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  border: 2px solid orange;
+  border-radius: 10px;
+}
+
+.controls {
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  margin: 5px;
+}
+
+.spin {
+  background: green;
+  color: white;
+}
+
+.stop {
+  background: red;
+  color: white;
+}
+
+.info {
+  margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="title">🔥 Hot Sevens</div>
+
+  <div class="reels">
+    <div class="reel" id="r1">🍉</div>
+    <div class="reel" id="r2">🍋</div>
+    <div class="reel" id="r3">⭐</div>
+    <div class="reel" id="r4">🍒</div>
+    <div class="reel" id="r5">7️⃣</div>
+  </div>
+
+  <div class="controls">
+    <button class="spin" onclick="spin()">SPIN</button>
+    <button class="stop" onclick="stopSpin()">STOP</button>
+  </div>
+
+  <div class="info">
+    Kredit: <span id="credit">100</span><br>
+    Uduş: <span id="win">0</span>
+  </div>
+</div>
+
+<script>
+const symbols = ["🍉","🍋","🍒","⭐","7️⃣","🍊"];
+let spinning = false;
+let interval;
+
+function randomSymbol() {
+  return symbols[Math.floor(Math.random() * symbols.length)];
+}
+
+function spin() {
+  if (spinning) return;
+  spinning = true;
+
+  interval = setInterval(() => {
+    for (let i = 1; i <= 5; i++) {
+      document.getElementById("r" + i).innerText = randomSymbol();
+    }
+  }, 100);
+}
+
+function stopSpin() {
+  spinning = false;
+  clearInterval(interval);
+
+  // sadə uduş yoxlaması
+  let values = [];
+  for (let i = 1; i <= 5; i++) {
+    values.push(document.getElementById("r" + i).innerText);
+  }
+
+  let win = 0;
+  if (values.every(v => v === values[0])) {
+    win = 50;
+  }
+
+  document.getElementById("win").innerText = win;
+}
+</script>
+
+</body>
+</html>
