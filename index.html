@@ -3,136 +3,243 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hot Sevens Slot</title>
+<title>Hot Sevens Pro</title>
 
 <style>
 body {
-  background: #111;
-  color: white;
+  margin:0;
+  background:#0b0b0b;
   font-family: Arial;
-  text-align: center;
+  color:white;
+  text-align:center;
 }
 
-.container {
-  max-width: 400px;
-  margin: auto;
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+  background:black;
+  font-size:14px;
 }
+
+.jackpot { color:red; }
+.bonus { color:#00ff88; }
 
 .title {
-  font-size: 28px;
-  color: gold;
-  margin: 10px 0;
+  font-size:30px;
+  color:gold;
+  margin:10px;
+}
+
+.slot {
+  background:#5a0000;
+  margin:10px;
+  padding:10px;
+  border-radius:15px;
 }
 
 .reels {
-  display: flex;
-  justify-content: space-between;
-  background: darkred;
-  padding: 10px;
-  border-radius: 10px;
+  display:flex;
+  justify-content:space-between;
 }
 
 .reel {
-  width: 60px;
-  height: 120px;
-  background: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 30px;
-  border: 2px solid orange;
-  border-radius: 10px;
+  width:60px;
+  height:150px;
+  background:#111;
+  border:2px solid orange;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:35px;
+}
+
+.panel {
+  display:flex;
+  justify-content:space-around;
+  margin-top:10px;
+}
+
+.box {
+  background:#111;
+  padding:10px;
+  border-radius:10px;
+  width:30%;
 }
 
 .controls {
-  margin-top: 20px;
+  margin-top:15px;
 }
 
 button {
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 10px;
-  border: none;
-  margin: 5px;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  margin:5px;
+  font-size:14px;
 }
 
-.spin {
-  background: green;
-  color: white;
-}
+.spin { background:green; color:white; }
+.stop { background:red; color:white; }
+.auto { background:#ffaa00; }
+.bet { background:#444; color:white; }
 
-.stop {
-  background: red;
-  color: white;
-}
-
-.info {
-  margin-top: 15px;
+.big-btn {
+  margin-top:15px;
+  background:white;
+  color:black;
+  font-size:20px;
+  width:120px;
+  height:120px;
+  border-radius:50%;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <div class="title">🔥 Hot Sevens</div>
+<div class="topbar">
+  <div class="jackpot">JACKPOT: <span id="jackpot">150.00</span> AZN</div>
+  <div class="bonus">BONUS: <span id="bonus">100.00</span> AZN</div>
+</div>
 
+<div class="title">🔥 Hot Sevens</div>
+
+<div class="slot">
   <div class="reels">
     <div class="reel" id="r1">🍉</div>
     <div class="reel" id="r2">🍋</div>
-    <div class="reel" id="r3">⭐</div>
-    <div class="reel" id="r4">🍒</div>
+    <div class="reel" id="r3">🍒</div>
+    <div class="reel" id="r4">⭐</div>
     <div class="reel" id="r5">7️⃣</div>
-  </div>
-
-  <div class="controls">
-    <button class="spin" onclick="spin()">SPIN</button>
-    <button class="stop" onclick="stopSpin()">STOP</button>
-  </div>
-
-  <div class="info">
-    Kredit: <span id="credit">100</span><br>
-    Uduş: <span id="win">0</span>
   </div>
 </div>
 
+<div class="panel">
+  <div class="box">
+    CREDIT<br>
+    <span id="credit">1000</span>
+  </div>
+  <div class="box">
+    WIN<br>
+    <span id="win">0</span>
+  </div>
+  <div class="box">
+    BET<br>
+    <span id="bet">20</span>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="bet" onclick="changeBet(-10)">- BET</button>
+  <button class="bet" onclick="changeBet(10)">+ BET</button>
+  <button class="auto" onclick="autoSpin()">AUTO</button>
+</div>
+
+<button class="big-btn" onclick="spin()">SPIN</button>
+<button class="stop" onclick="stopSpin()">STOP</button>
+
 <script>
 const symbols = ["🍉","🍋","🍒","⭐","7️⃣","🍊"];
-let spinning = false;
-let interval;
 
-function randomSymbol() {
-  return symbols[Math.floor(Math.random() * symbols.length)];
+let spinning=false;
+let interval;
+let credit=1000;
+let bet=20;
+let auto=false;
+
+function rand() {
+  return symbols[Math.floor(Math.random()*symbols.length)];
+}
+
+function updateUI() {
+  document.getElementById("credit").innerText=credit;
+  document.getElementById("bet").innerText=bet;
 }
 
 function spin() {
-  if (spinning) return;
-  spinning = true;
+  if (spinning || credit < bet) return;
 
-  interval = setInterval(() => {
-    for (let i = 1; i <= 5; i++) {
-      document.getElementById("r" + i).innerText = randomSymbol();
+  credit -= bet;
+  updateUI();
+
+  spinning=true;
+
+  interval=setInterval(()=>{
+    for(let i=1;i<=5;i++){
+      document.getElementById("r"+i).innerText=rand();
     }
-  }, 100);
+  },100);
+
+  if(auto){
+    setTimeout(stopSpin,1500);
+  }
 }
 
-function stopSpin() {
-  spinning = false;
+function stopSpin(){
+  if(!spinning) return;
   clearInterval(interval);
+  spinning=false;
 
-  // sadə uduş yoxlaması
-  let values = [];
-  for (let i = 1; i <= 5; i++) {
-    values.push(document.getElementById("r" + i).innerText);
+  let vals=[];
+  for(let i=1;i<=5;i++){
+    vals.push(document.getElementById("r"+i).innerText);
   }
 
-  let win = 0;
-  if (values.every(v => v === values[0])) {
-    win = 50;
+  let win=0;
+
+  // sadə uduş sistemi
+  let counts={};
+  vals.forEach(v=>counts[v]=(counts[v]||0)+1);
+
+  for(let k in counts){
+    if(counts[k]>=3){
+      win = counts[k]*bet;
+    }
   }
 
-  document.getElementById("win").innerText = win;
+  // JACKPOT (5 eyni)
+  if(Object.values(counts).includes(5)){
+    win = 500;
+    alert("JACKPOT!!!");
+  }
+
+  credit += win;
+  document.getElementById("win").innerText=win;
+
+  updateUI();
 }
+
+function changeBet(val){
+  bet += val;
+  if(bet<10) bet=10;
+  updateUI();
+}
+
+function autoSpin(){
+  auto=!auto;
+  if(auto){
+    let loop=setInterval(()=>{
+      if(!auto){ clearInterval(loop); return; }
+      spin();
+    },2000);
+  }
+}
+
+// fake jackpot/bonus artımı
+setInterval(()=>{
+  let j = parseFloat(document.getElementById("jackpot").innerText);
+  let b = parseFloat(document.getElementById("bonus").innerText);
+
+  j += Math.random();
+  b += Math.random();
+
+  document.getElementById("jackpot").innerText=j.toFixed(2);
+  document.getElementById("bonus").innerText=b.toFixed(2);
+},2000);
+
+updateUI();
 </script>
 
 </body>
