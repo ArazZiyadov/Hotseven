@@ -1,198 +1,21 @@
 <!DOCTYPE html>
-<html lang="az">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hot Sevens FIXED</title>
-
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background: radial-gradient(circle,#2b0000,#000);
-  color:white;
-  text-align:center;
-}
-
-.title{
-  font-size:30px;
-  color:gold;
-  margin:15px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(5,70px);
-  gap:8px;
-  justify-content:center;
-}
-
-.cell{
-  width:70px;
-  height:70px;
-  background:black;
-  border:2px solid orange;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.cell img{
-  width:60px;
-}
-
-.panel{
-  display:flex;
-  justify-content:space-around;
-  margin-top:15px;
-}
-
-button{
-  padding:10px;
-  margin:5px;
-  border:none;
-  border-radius:10px;
-}
-
-.spin{background:limegreen;}
-.stop{background:red;color:white;}
-.auto{background:orange;}
-
-.big{
-  width:100px;
-  height:100px;
-  border-radius:50%;
-  background:white;
-  font-size:18px;
-}
-</style>
+  <title>Slot Machine</title>
+  <meta charset="utf-8" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="viewport" content="width=480,initial-scale=1, maximum-scale=1" />
+  <link rel="icon" href="https://n1md7.github.io/slot-game/img/img/Cherry.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Permanent+Marker&family=Roboto:ital,wght@1,300&display=swap" />
 </head>
-
 <body>
-
-<div class="title">🔥 HOT SEVENS 🔥</div>
-
-<div id="grid" class="grid"></div>
-
-<div class="panel">
-  <div>CREDIT<br><span id="credit">1000</span></div>
-  <div>WIN<br><span id="win">0</span></div>
-  <div>BET<br><span id="bet">20</span></div>
-</div>
-
-<button onclick="changeBet(-10)">- BET</button>
-<button onclick="changeBet(10)">+ BET</button>
-<button class="auto" onclick="autoSpin()">AUTO</button>
-
-<br>
-<button class="big" onclick="spin()">SPIN</button>
-
-<script>
-/* ICONS */
-const ICONS = {
-  A:"https://cdn-icons-png.flaticon.com/512/590/590685.png",
-  B:"https://cdn-icons-png.flaticon.com/512/135/135620.png",
-  C:"https://cdn-icons-png.flaticon.com/512/590/590772.png",
-  D:"https://cdn-icons-png.flaticon.com/512/590/590749.png",
-  W:"https://cdn-icons-png.flaticon.com/512/188/188987.png",
-  S:"https://cdn-icons-png.flaticon.com/512/616/616494.png"
-};
-
-const SYMBOLS = ["A","B","C","D","W","S"];
-
-let credit=1000;
-let bet=20;
-let auto=false;
-
-/* GRID CREATE */
-function createGrid(){
-  const grid=document.getElementById("grid");
-  grid.innerHTML="";
-  for(let c=0;c<5;c++){
-    for(let r=0;r<3;r++){
-      let div=document.createElement("div");
-      div.className="cell";
-      div.dataset.c=c;
-      div.dataset.r=r;
-
-      let img=document.createElement("img");
-      img.src=ICONS.A;
-
-      div.appendChild(img);
-      grid.appendChild(div);
-    }
-  }
-}
-createGrid();
-
-/* SET CELL */
-function setCell(c,r,s){
-  let el=document.querySelector(`[data-c="${c}"][data-r="${r}"] img`);
-  if(el){
-    el.src=ICONS[s];
-  }
-}
-
-/* RANDOM */
-function rand(){
-  return SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
-}
-
-/* SPIN (frontend test) */
-function spin(){
-  if(credit<bet) return alert("Balans azdır");
-
-  credit-=bet;
-
-  let result=[];
-
-  for(let c=0;c<5;c++){
-    result[c]=[];
-    for(let r=0;r<3;r++){
-      let s=rand();
-      result[c][r]=s;
-      setCell(c,r,s);
-    }
-  }
-
-  // WIN CHECK (sadə)
-  let mid = result.map(c=>c[1]);
-  let count={};
-
-  mid.forEach(s=>count[s]=(count[s]||0)+1);
-
-  let win=0;
-  for(let s in count){
-    if(count[s]>=3){
-      win = count[s]*bet;
-    }
-  }
-
-  credit+=win;
-
-  document.getElementById("credit").innerText=credit;
-  document.getElementById("win").innerText=win;
-}
-
-/* BET */
-function changeBet(v){
-  bet+=v;
-  if(bet<10) bet=10;
-  document.getElementById("bet").innerText=bet;
-}
-
-/* AUTO */
-function autoSpin(){
-  auto=!auto;
-  if(auto){
-    let loop=setInterval(()=>{
-      if(!auto){clearInterval(loop);return;}
-      spin();
-    },1000);
-  }
-}
-</script>
-
-</body>
-</html>
+  <div>
+    <a class="github-button" href="https://github.com/n1md7" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Follow @n1md7 on GitHub">Follow @n1md7</a>
+    <a class="github-button" href="https://github.com/n1md7/slot-game" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star n1md7/slot-game on GitHub">Star</a>
+    <a class="github-button" href="https://github.com/n1md7/slot-game/fork" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-icon="octicon-repo-forked" data-size="large" data-show-count="true" aria-label="Fork n1md7/slot-game on GitHub">Fork</a>
+  </div>
+  <div class="game-container">
+    <!-- Winner Display -->
+    <div class="winner-display mb-3">
